@@ -1,42 +1,34 @@
-# docker-compose.test.yml
+# docker-compose.yml
 version: '3.8'
 
 services:
-  # Um único serviço de teste para ver se o 'build' funciona
-  teste_de_construcao:
+  # --- Serviço do Backend (API) ---
+  backend:
     build:
-      context: ./backend
-      dockerfile: backend.Dockerfile
+      context: ./backend # Caminho para a pasta do backend
+      dockerfile: backend.Dockerfile # Nome do Dockerfile do backend
     restart: always
-    # As variáveis de ambiente são cruciais para a aplicação funcionar.
-    # O Portainer vai ler o ficheiro .env.production que está no seu GitHub.
     env_file:
-      - ./.env.production
-    # Ligamos o serviço a uma rede que vamos criar abaixo.
+      - ./.env.production # Aponta para o arquivo com as variáveis de ambiente
     networks:
       - recrutamento-net
 
   # --- Serviço do Frontend (React App) ---
   frontend:
     build:
-      # O mesmo para o frontend: construir a partir da pasta 'frontend'.
-      context: ./frontend
-      dockerfile: frontend.Dockerfile
+      context: ./frontend # Caminho para a pasta do frontend
+      dockerfile: frontend.Dockerfile # Nome do Dockerfile do frontend
     restart: always
     ports:
-      # Expomos a porta 80 do contentor para a porta 80 do seu servidor.
-      # É assim que os utilizadores acedem ao seu site.
-      - "80:80"
-    # Garante que o frontend só arranque depois de o backend estar pronto.
+      # Mapeia a porta 80 do contêiner para a porta 80 do servidor
+      - "80:80" 
     depends_on:
       - backend
-    # Ligamos o serviço à mesma rede para que possam comunicar.
     networks:
       - recrutamento-net
 
 # --- Definição da Rede da Aplicação ---
-# Criamos uma rede privada para esta stack, garantindo a comunicação segura
-# entre o frontend e o backend. O Nginx fará o proxy para o backend.
+# O Docker Compose criará esta rede para que os contêineres possam se comunicar
 networks:
   recrutamento-net:
     driver: bridge
