@@ -1,12 +1,10 @@
-# docker-compose.yml (Coloque este ficheiro na raiz do seu projeto no GitHub)
+# docker-compose.test.yml
 version: '3.8'
 
 services:
-  # --- Serviço do Backend (API) ---
-  backend:
-    # A instrução 'build' diz ao Portainer para olhar para o código e construir a imagem.
+  # Um único serviço de teste para ver se o 'build' funciona
+  teste_de_construcao:
     build:
-      # 'context' indica que o código fonte e o Dockerfile estão na pasta 'backend'.
       context: ./backend
       dockerfile: backend.Dockerfile
     restart: always
