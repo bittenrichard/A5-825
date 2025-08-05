@@ -3,13 +3,10 @@ version: '3.8'
 services:
   # Serviço do Backend
   backend:
-    # Constrói a imagem usando o Dockerfile na pasta 'backend'
     build:
-      context: ./backend # Substitua 'backend' pelo nome exato da sua pasta de backend
-    container_name: recrutamento_backend
+      context: ./backend
+      dockerfile: backend.Dockerfile
     restart: always
-    # AQUI VOCÊ DEVE COLOCAR TODAS AS SUAS VARIÁVEIS DE AMBIENTE
-    # NUNCA COLOQUE OS SEGREDOS DIRETAMENTE NO CÓDIGO FONTE.
     environment:
       - FRONTEND_URL=https://recrutamentoia.com.br
       - VITE_BASEROW_API_KEY=anGucsRrFCKrOmUYHapVYsr5U3FVK85o
@@ -20,29 +17,27 @@ services:
       - N8N_SCHEDULE_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/googleacesso
       - NODE_ENV=production
       - PORT=3001
-    # Não é necessário mapear portas para o exterior, pois o frontend fará o proxy.
-    # Mas podemos mapear para depuração, se necessário. Ex: "3001:3001"
+    # Conecta o serviço à rede 'foco'
     networks:
-      - recrutamento_net
+      - foco
 
   # Serviço do Frontend
   frontend:
-    # Constrói a imagem usando o Dockerfile na pasta 'frontend'
     build:
-      context: ./frontend # Substitua 'frontend' pelo nome exato da sua pasta de frontend
-    container_name: recrutamento_frontend
+      context: ./frontend
+      dockerfile: frontend.Dockerfile
     restart: always
     ports:
-      # Mapeia a porta 80 do contentor para a porta 80 da sua máquina anfitriã (servidor)
-      # Isto torna a sua aplicação acessível através do IP do seu servidor.
       - "80:80"
-    # Garante que o frontend só arranque depois de o backend estar disponível
     depends_on:
       - backend
+    # Conecta o serviço à rede 'foco'
     networks:
-      - recrutamento_net
+      - foco
 
-# Define a rede partilhada para que os contentores se possam comunicar
+# Declaração da rede
 networks:
-  recrutamento_net:
-    driver: bridge
+  # O nome aqui tem de corresponder EXATAMENTE ao nome da sua rede no Portainer
+  foco:
+    # Esta diretiva indica ao Docker para usar uma rede que já existe
+    external: true
