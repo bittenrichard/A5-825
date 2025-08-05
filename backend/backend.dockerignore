@@ -1,0 +1,6 @@
+# Ficheiros e pastas a ignorar pelo Docker
+
+node_modules
+npm-debug.log
+.env
+dist-server

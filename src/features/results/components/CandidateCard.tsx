@@ -1,7 +1,7 @@
 // Local: src/features/results/components/CandidateCard.tsx
 
 import React from 'react';
-import { useDrag } from 'react-dnd'; // CORREÇÃO: Importar useDrag
+import { useDrag } from 'react-dnd';
 import { Candidate } from '../../../shared/types';
 import { GripVertical, CalendarPlus, Mail, CalendarDays } from 'lucide-react';
 import { format } from 'date-fns';
@@ -15,7 +15,8 @@ interface CandidateCardProps {
 }
 
 const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, onViewDetails, onScheduleInterview, onUpdateStatus }) => {
-  const getScoreColor = (score: number) => {
+  const getScoreColor = (score: number | null) => {
+    if (score === null) return 'bg-gray-100 text-gray-800';
     if (score >= 85) return 'bg-green-100 text-green-800';
     if (score >= 70) return 'bg-yellow-100 text-yellow-800';
     return 'bg-red-100 text-red-800';
@@ -25,7 +26,6 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, onViewDetails,
     ? format(new Date(candidate.data_triagem), 'dd/MM/yyyy', { locale: ptBR }) 
     : 'N/A';
 
-  // CORREÇÃO: Hook useDrag para tornar o card arrastável
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'candidateCard',
     item: { id: candidate.id },
@@ -36,7 +36,7 @@ const CandidateCard: React.FC<CandidateCardProps> = ({ candidate, onViewDetails,
 
   return (
     <div
-      ref={drag} // CORREÇÃO: Atribuir a referência 'drag' ao div
+      ref={drag}
       className={`bg-white rounded-lg border shadow-sm mb-4 group relative 
                   transition-all duration-200 ease-out 
                   hover:shadow-md hover:-translate-y-1

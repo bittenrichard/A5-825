@@ -1,6 +1,6 @@
 // Local: src/App.tsx
 
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from './features/auth/hooks/useAuth';
 import { useNavigation } from './shared/hooks/useNavigation';
 import LoginPage from './features/auth/components/LoginPage';
@@ -13,18 +13,23 @@ import ResultsPage from './features/results/components/ResultsPage';
 import SettingsPage from './features/settings/components/SettingsPage';
 import { LoginCredentials, SignUpCredentials } from './features/auth/types';
 import { JobPosting } from './features/screening/types';
-import { Candidate } from './shared/types';
 import { Loader2 } from 'lucide-react';
 import CandidateDatabasePage from './features/database/components/CandidateDatabasePage';
 import AgendaPage from './features/agenda/components/AgendaPage';
 import { useDataStore } from './shared/store/useDataStore';
 
-// IMPORTAÇÕES DO DndProvider e HTML5Backend
+// IMPORTAÇÕES PARA O DRAG AND DROP
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const LoadingSpinner: React.FC = () => (
-  <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50"><div className="text-center"><Loader2 className="mx-auto h-12 w-12 text-indigo-600 animate-spin" /><h2 className="mt-6 text-xl font-semibold text-gray-800">Carregando...</h2><p className="mt-2 text-gray-500">Estamos preparando tudo para você.</p></div></div>
+  <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <Loader2 className="mx-auto h-12 w-12 text-indigo-600 animate-spin" />
+      <h2 className="mt-6 text-xl font-semibold text-gray-800">Carregando...</h2>
+      <p className="mt-2 text-gray-500">Estamos preparando tudo para você.</p>
+    </div>
+  </div>
 );
 
 function App() {
@@ -75,8 +80,8 @@ function App() {
     navigateTo('results');
   };
 
-  const handleJobUpdated = (updatedJob: JobPosting) => {
-    useDataStore.getState().updateJobInStore(updatedJob);
+  const handleJobUpdated = () => { // Não precisa mais do objeto 'updatedJob'
+    fetchAllData(profile!); // Apenas re-busque os dados para garantir consistência
     navigateTo('dashboard');
   };
 
@@ -90,6 +95,7 @@ function App() {
   };
 
   if (isAuthLoading) return <LoadingSpinner />;
+
   if (!isAuthenticated) {
     return (
       <div className="font-inter antialiased">
@@ -97,6 +103,7 @@ function App() {
       </div>
     );
   }
+
   if (!profile || isDataLoading) return <LoadingSpinner />;
 
   const renderContent = () => {
@@ -116,7 +123,6 @@ function App() {
 
   return (
     <div className="font-inter antialiased">
-      {/* CORREÇÃO: Envolva a aplicação com o DndProvider */}
       <DndProvider backend={HTML5Backend}>
         <MainLayout currentPage={currentPage} user={profile} onNavigate={navigateTo} onLogout={handleLogout}>{renderContent()}</MainLayout>
       </DndProvider>

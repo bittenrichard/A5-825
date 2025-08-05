@@ -16,9 +16,8 @@ interface KanbanColumnProps {
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({ columnId, title, candidates, onViewDetails, onScheduleInterview, onUpdateStatus }) => {
     
-  // CORREÇÃO: Hook useDrop para que a coluna seja uma zona de destino
   const [{ isOver }, drop] = useDrop(() => ({
-    accept: 'candidateCard', // Aceita apenas itens do tipo 'candidateCard'
+    accept: 'candidateCard',
     drop: (item: { id: number }) => onUpdateStatus(item.id, columnId),
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
@@ -29,7 +28,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({ columnId, title, candidates
     <div className="bg-gray-100 rounded-lg p-4 w-full md:w-80 lg:w-96 flex-shrink-0 flex flex-col min-h-full">
       <h3 className="font-bold text-gray-800 mb-4 px-2 flex-shrink-0">{title} ({candidates.length})</h3>
       
-      {/* CORREÇÃO: Atribuir a referência 'drop' ao div */}
       <div 
         ref={drop}
         className={`p-2 rounded-md transition-colors duration-200 border-2 border-dashed

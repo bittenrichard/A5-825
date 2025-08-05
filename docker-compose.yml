@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # Serviço do Backend
+  backend:
+    # Constrói a imagem usando o Dockerfile na pasta 'backend'
+    build:
+      context: ./backend # Substitua 'backend' pelo nome exato da sua pasta de backend
+    container_name: recrutamento_backend
+    restart: always
+    # AQUI VOCÊ DEVE COLOCAR TODAS AS SUAS VARIÁVEIS DE AMBIENTE
+    # NUNCA COLOQUE OS SEGREDOS DIRETAMENTE NO CÓDIGO FONTE.
+    environment:
+      - FRONTEND_URL=https://recrutamentoia.com.br
+      - VITE_BASEROW_API_KEY=anGucsRrFCKrOmUYHapVYsr5U3FVK85o
+      - GOOGLE_CLIENT_ID=726048519835-4o31uj1ssftc47a08kcb8hs1hkm2v040.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_REDIRECT_URI=https://backend.recrutamentoia.com.br/api/google/auth/callback
+      - N8N_TRIAGEM_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/recrutamento
+      - N8N_SCHEDULE_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/googleacesso
+      - NODE_ENV=production
+      - PORT=3001
+    # Não é necessário mapear portas para o exterior, pois o frontend fará o proxy.
+    # Mas podemos mapear para depuração, se necessário. Ex: "3001:3001"
+    networks:
+      - recrutamento_net
+
+  # Serviço do Frontend
+  frontend:
+    # Constrói a imagem usando o Dockerfile na pasta 'frontend'
+    build:
+      context: ./frontend # Substitua 'frontend' pelo nome exato da sua pasta de frontend
+    container_name: recrutamento_frontend
+    restart: always
+    ports:
+      # Mapeia a porta 80 do contentor para a porta 80 da sua máquina anfitriã (servidor)
+      # Isto torna a sua aplicação acessível através do IP do seu servidor.
+      - "80:80"
+    # Garante que o frontend só arranque depois de o backend estar disponível
+    depends_on:
+      - backend
+    networks:
+      - recrutamento_net
+
+# Define a rede partilhada para que os contentores se possam comunicar
+networks:
+  recrutamento_net:
+    driver: bridge
