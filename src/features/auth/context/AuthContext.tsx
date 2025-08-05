@@ -2,11 +2,6 @@
 
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { AuthState, LoginCredentials, SignUpCredentials, UserProfile } from '../types';
-// Remova: import { baserow } from '../../../shared/services/baserowClient'; // REMOVA esta linha
-// Remova: import bcrypt from 'bcryptjs'; // REMOVA esta linha
-
-// Remova: const USERS_TABLE_ID = '711'; // REMOVA esta linha
-// Remova: const SALT_ROUNDS = 10; // REMOVA esta linha
 
 interface AuthContextType extends AuthState {
   error: string | null;
@@ -64,13 +59,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       return;
     }
     try {
-      // Chame o backend para buscar o perfil atualizado
       const response = await fetch(`/api/users/${authState.profile.id}`);
       if (!response.ok) {
         throw new Error('Falha ao buscar perfil atualizado.');
       }
       const userProfile: UserProfile = await response.json();
-      
+
       localStorage.setItem('userProfile', JSON.stringify(userProfile));
       setAuthState(prev => ({ ...prev, profile: userProfile }));
     } catch (error) {
@@ -93,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!response.ok) {
         throw new Error(data.error || 'Erro ao cadastrar. Tente novamente.');
       }
-      
+
       const userProfile: UserProfile = data.user;
       setAuthState(prev => ({ ...prev, isLoading: false }));
       return userProfile;
@@ -120,7 +114,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!response.ok) {
         throw new Error(data.error || 'Falha no login. Verifique suas credenciais.');
       }
-      
+
       const userProfile: UserProfile = data.user;
       localStorage.setItem('userProfile', JSON.stringify(userProfile));
       setAuthState({ profile: userProfile, isAuthenticated: true, isLoading: false });
