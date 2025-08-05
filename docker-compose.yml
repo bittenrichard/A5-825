@@ -17,7 +17,8 @@ services:
       - N8N_SCHEDULE_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/googleacesso
       - NODE_ENV=production
       - PORT=3001
-    # O Docker vai criar e adicionar este serviço a uma rede padrão automaticamente.
+    networks:
+      - recrutamento-net
 
   # Serviço do Frontend
   frontend:
@@ -29,6 +30,10 @@ services:
       - "80:80"
     depends_on:
       - backend
-    # O Docker vai criar e adicionar este serviço à mesma rede padrão.
+    networks:
+      - recrutamento-net
 
-# A secção de redes foi removida. O Docker Compose vai tratar disto.
+# Deixamos o Docker Compose criar esta rede para nós
+networks:
+  recrutamento-net:
+    driver: bridge
