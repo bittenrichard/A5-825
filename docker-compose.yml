@@ -2,33 +2,31 @@
 version: '3.8'
 
 services:
-  # --- Serviço do Backend (API) ---
+  # Serviço do Backend
   backend:
     build:
-      context: ./backend # Caminho para a pasta do backend
-      dockerfile: backend.Dockerfile # Nome do Dockerfile do backend
+      context: ./backend 
+      dockerfile: backend.Dockerfile 
     restart: always
     env_file:
-      - ./.env.production # Aponta para o arquivo com as variáveis de ambiente
+      - ./.env.production
     networks:
       - recrutamento-net
 
-  # --- Serviço do Frontend (React App) ---
+  # Serviço do Frontend
   frontend:
     build:
-      context: ./frontend # Caminho para a pasta do frontend
-      dockerfile: frontend.Dockerfile # Nome do Dockerfile do frontend
+      context: ./frontend 
+      dockerfile: frontend.Dockerfile 
     restart: always
     ports:
-      # Mapeia a porta 80 do contêiner para a porta 80 do servidor
-      - "80:80" 
+      - "80:80"
     depends_on:
       - backend
     networks:
       - recrutamento-net
 
-# --- Definição da Rede da Aplicação ---
-# O Docker Compose criará esta rede para que os contêineres possam se comunicar
+# Definição da Rede da Aplicação
 networks:
   recrutamento-net:
     driver: bridge
