@@ -1,39 +1,44 @@
+# docker-compose.yml (Coloque este ficheiro na raiz do seu projeto no GitHub)
 version: '3.8'
 
 services:
-  # Serviço do Backend
+  # --- Serviço do Backend (API) ---
   backend:
+    # A instrução 'build' diz ao Portainer para olhar para o código e construir a imagem.
     build:
+      # 'context' indica que o código fonte e o Dockerfile estão na pasta 'backend'.
       context: ./backend
       dockerfile: backend.Dockerfile
     restart: always
-    environment:
-      - FRONTEND_URL=https://recrutamentoia.com.br
-      - VITE_BASEROW_API_KEY=anGucsRrFCKrOmUYHapVYsr5U3FVK85o
-      - GOOGLE_CLIENT_ID=726048519835-4o31uj1ssftc47a08kcb8hs1hkm2v040.apps.googleusercontent.com
-      - GOOGLE_CLIENT_SECRET=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
-      - GOOGLE_REDIRECT_URI=https://backend.recrutamentoia.com.br/api/google/auth/callback
-      - N8N_TRIAGEM_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/recrutamento
-      - N8N_SCHEDULE_WEBHOOK_URL=https://webhook.focoserv.com.br/webhook/googleacesso
-      - NODE_ENV=production
-      - PORT=3001
+    # As variáveis de ambiente são cruciais para a aplicação funcionar.
+    # O Portainer vai ler o ficheiro .env.production que está no seu GitHub.
+    env_file:
+      - ./.env.production
+    # Ligamos o serviço a uma rede que vamos criar abaixo.
     networks:
       - recrutamento-net
 
-  # Serviço do Frontend
+  # --- Serviço do Frontend (React App) ---
   frontend:
     build:
+      # O mesmo para o frontend: construir a partir da pasta 'frontend'.
       context: ./frontend
       dockerfile: frontend.Dockerfile
     restart: always
     ports:
+      # Expomos a porta 80 do contentor para a porta 80 do seu servidor.
+      # É assim que os utilizadores acedem ao seu site.
       - "80:80"
+    # Garante que o frontend só arranque depois de o backend estar pronto.
     depends_on:
       - backend
+    # Ligamos o serviço à mesma rede para que possam comunicar.
     networks:
       - recrutamento-net
 
-# Deixamos o Docker Compose criar esta rede para nós
+# --- Definição da Rede da Aplicação ---
+# Criamos uma rede privada para esta stack, garantindo a comunicação segura
+# entre o frontend e o backend. O Nginx fará o proxy para o backend.
 networks:
   recrutamento-net:
     driver: bridge
